@@ -15,7 +15,8 @@ Tables included:
 - Products
 - Orders
 - Order_Items
-  🧩 Database Schema
+  
+🧩 Database Schema
 ![Schema](images/schema.png)
 
 This diagram shows the relationships between customers, orders, products, and order_items.
