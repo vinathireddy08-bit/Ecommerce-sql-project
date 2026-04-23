@@ -1,60 +1,74 @@
--- total revenue
 
-select sum(total_amount) as revenue from orders;
+ E-COMMERCE SQL ANALYSIS QUERIES
 
--- top spending customers
+ 1. Total Revenue
+SELECT SUM(total_amount) AS revenue
+FROM orders;
 
-select c.name,sum(o.total_amount) as total_spent
-from customers c
-inner join orders o on c.customer_id = o.customer_id
-group by c.name
-order by total_spent desc
-limit5;
-
--- monthly sales trend
-
-select month(order_date) as month,sum(total_amount) as revenue
-from orders 
-group by month(order_date)
-order by month;
+ 2. Top Spending Customers
+SELECT c.name, SUM(o.total_amount) AS total_spent
+FROM customers c
+INNER JOIN orders o 
+    ON c.customer_id = o.customer_id
+GROUP BY c.name
+ORDER BY total_spent DESC
+LIMIT 5;
 
 
---best selling products
-select products.product_id,sum(quantity) as total_sold
-from order_items
-inner join products on order_items.product_id = products.product_id
-group by products,product_id
-order by products.total_sold desc;
-
---revenue by product category
-select product.category,sum(order_items. product_price * order_items.quantity) as revenue
-from order_items
-inner join products on order_items.product_id = products.product_id
-group by products.category
-order by revenue desc;
-
---custommer orders count and total spent
-select customers.name,count(orders.order_id) as order_count,sum(orders.total_amount) as total_spent
-from orders
-left join customers on orders.customer_id = customers.customer_id
-group by customers.name
-order by total_spent desc;
-
---top products using window function
-select product_id,sum(quantity) as total_sales,
-rank()over(order by sum(quantity) desc) as ranking 
-from order_items
-group by product_id;
+ 3. Monthly Sales Trend (Recommended Format)
+SELECT DATE_FORMAT(order_date, '%Y-%m') AS month,
+       SUM(total_amount) AS revenue
+FROM orders
+GROUP BY month
+ORDER BY month;
 
 
+  4. Best Selling Products
+SELECT p.product_id, p.product_name,
+       SUM(oi.quantity) AS total_sold
+FROM order_items oi
+INNER JOIN products p 
+    ON oi.product_id = p.product_id
+GROUP BY p.product_id, p.product_name
+ORDER BY total_sold DESC;
 
 
+ 5. Revenue by Product Category
+SELECT p.category,
+       SUM(oi.price * oi.quantity) AS revenue
+FROM order_items oi
+INNER JOIN products p 
+    ON oi.product_id = p.product_id
+GROUP BY p.category
+ORDER BY revenue DESC;
 
 
+  6. Customer Orders Count & Total Spent
+SELECT c.name,
+       COUNT(o.order_id) AS order_count,
+       SUM(o.total_amount) AS total_spent
+FROM customers c
+LEFT JOIN orders o 
+    ON c.customer_id = o.customer_id
+GROUP BY c.name
+ORDER BY total_spent DESC;
+
+ 7. Top Products using Window Function
+SELECT product_id,
+       SUM(quantity) AS total_sales,
+       RANK() OVER (ORDER BY SUM(quantity) DESC) AS ranking
+FROM order_items
+GROUP BY product_id;
 
 
-
-
+ 8. Customer Lifetime Value (Advanced)
+SELECT c.customer_id, c.name,
+       SUM(o.total_amount) AS lifetime_value
+FROM customers c
+JOIN orders o 
+    ON c.customer_id = o.customer_id
+GROUP BY c.customer_id, c.name
+ORDER BY lifetime_value DESC;
 
 
 
